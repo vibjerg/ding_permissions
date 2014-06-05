@@ -1,10 +1,85 @@
 <?php
 /**
- * @file ding_permissions.module
+ * @file
  * Module file for secure permissions in code.
  */
 
 include_once 'ding_permissions.features.inc';
+
+/**
+ * Implements hook_menu_alter().
+ *
+ * Alters the user edit menu path to ensure that only the right roles can edit
+ * the other users. E.g the local administrator role should not be able to
+ * change the profile of an administrator, but do to Drupal only have one
+ * permission "administer users" we are not able to control this.
+ */
+function ding_permissions_menu_alter(&$items) {
+  $items['user/%user/edit']['access callback'] = 'ding_permissions_user_access_level';
+}
+
+/**
+ * Implements hook_permission().
+ *
+ * Defines the new user edit permission based on user role id's.
+ *
+ * @see ding_permissions_menu_alter()
+ */
+function ding_permissions_permission() {
+  $permissions = array();
+
+  // Get all roles.
+  $roles = user_roles(TRUE);
+
+  // Add edit permission for each role.
+  foreach ($roles as $rid => $role) {
+    // Create a new permission for each user role.
+    $permissions['administer user role ' . $rid] = array(
+      'title' => t('Administer user with role: %role', array('%role' => $role)),
+      'description' => t('Edit user with this role.'),
+    );
+  }
+
+  return $permissions;
+}
+
+/**
+ * Access callback that checks user role edit permissions.
+ *
+ * @param Object $account
+ *   The user being edited.
+ *
+ * @see ding_permissions_menu_alter()
+ *
+ * @return bool
+ *   If the user is allowed to edit the account TRUE is returned else FALSE.
+ */
+function ding_permissions_user_access_level($account) {
+  // We don't allow anonymous to edit users.
+  if ($account->uid) {
+    // Allow users to edit own profile.
+    if ($GLOBALS['user']->uid == $account->uid) {
+      return TRUE;
+    }
+    else {
+      // Check that the user have "administer users" permission.
+      if (user_access('administer users')) {
+        // Get the roles of the account we are trying to edit.
+        $rids = array_keys($account->roles);
+        foreach ($rids as $rid) {
+          // Check if the user logged in has permission to edit the accounts
+          // role. If we are allowed to edit just one of the roles access is
+          // granted.
+          if (user_access('administer user role ' . $rid)) {
+            return TRUE;
+          }
+        }
+      }
+    }
+  }
+
+  return FALSE;
+}
 
 /**
  * Define site roles in code.
@@ -55,6 +130,7 @@ function ding_permissions_secure_permissions($role) {
     'authenticated user' => array(
       'access comments',
       'access content',
+      'access site-wide contact form',
       'access user profiles',
       'edit own comments',
       'post comments',
@@ -138,6 +214,12 @@ function ding_permissions_secure_permissions($role) {
       'administer ting settings',
       'administer tipsy',
       'administer url aliases',
+      'administer user role 3',
+      'administer user role 4',
+      'administer user role 5',
+      'administer user role 6',
+      'administer user role 7',
+      'administer user role 9',
       'administer users',
       'administer uuid',
       'administer varnish',
@@ -324,6 +406,7 @@ function ding_permissions_secure_permissions($role) {
       'access campaign rules',
       'access content overview',
       'access contextual links',
+      'access site-wide contact form',
       'access overlay',
       'access toolbar',
       'access workbench',
@@ -334,6 +417,9 @@ function ding_permissions_secure_permissions($role) {
       'administer opening hours configuration',
       'administer shortcuts',
       'administer url aliases',
+      'administer user role 4',
+      'administer user role 5',
+      'administer user role 7',
       'assign editor role',
       'assign guest blogger role',
       'assign local editor role',
@@ -448,8 +534,10 @@ function ding_permissions_secure_permissions($role) {
     ),
     'guest blogger' => array(
       'access overlay',
+      'access site-wide contact form',
       'access toolbar',
       'access workbench',
+      'administer user role 5',
       'bpi push content',
       'bpi syndicate content',
       'clone node',
@@ -476,6 +564,7 @@ function ding_permissions_secure_permissions($role) {
       'access administration pages',
       'access campaign rules',
       'access content overview',
+      'access site-wide contact form',
       'access contextual links',
       'access overlay',
       'access site in maintenance mode',
@@ -499,6 +588,11 @@ function ding_permissions_secure_permissions($role) {
       'administer themes',
       'administer ting settings',
       'administer url aliases',
+      'administer user role 4',
+      'administer user role 5',
+      'administer user role 6',
+      'administer user role 7',
+      'administer user role 9',
       'administer users',
       'assign editor role',
       'assign guest blogger role',
@@ -625,6 +719,7 @@ function ding_permissions_secure_permissions($role) {
       'access campaign rules',
       'access content overview',
       'access contextual links',
+      'access site-wide contact form',
       'access overlay',
       'access toolbar',
       'access workbench',
@@ -632,6 +727,9 @@ function ding_permissions_secure_permissions($role) {
       'administer contact forms',
       'administer menu',
       'administer shortcuts',
+      'administer user role 4',
+      'administer user role 5',
+      'administer user role 7',
       'bpi push content',
       'bpi syndicate content',
       'clone node',
