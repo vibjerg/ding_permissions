@@ -1,3 +1,6 @@
+# Review Kommentar
+Readme fil mangler at beskrive rollerne 'local administrator', 'provider', 'staff'
+
 # Ding user roles
 This feature holds the default roles used in standard ding2 installations. The
 different roles are described below. This feature does not set the permissions
