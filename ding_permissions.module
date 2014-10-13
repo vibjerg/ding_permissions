@@ -11,7 +11,7 @@ include_once 'ding_permissions.features.inc';
  *
  * Alters the user edit menu path to ensure that only the right roles can edit
  * the other users. E.g the local administrator role should not be able to
- * change the profile of an administrator, but do to Drupal only have one
+ * change the profile of an administrator, but due to Drupal only have one
  * permission "administer users" we are not able to control this.
  */
 function ding_permissions_menu_alter(&$items) {
@@ -107,7 +107,7 @@ function ding_permission_check_roles_access($account) {
  * Define site roles in code.
  *
  * Create a secure_permissions_data module directory and place this function
- * in secure_permissions_data.module.
+ * in secure_permissions_data.module. (Is this comment correct?)
  *
  * @return array
  *   An array defining all the roles for the site.
@@ -130,7 +130,7 @@ function ding_permissions_secure_permissions_roles() {
  * Define site permissions in code.
  *
  * Create a secure_permissions_data module directory and place this function
- * in secure_permissions_data.module.
+ * in secure_permissions_data.module. (Is this comment correct?)
  *
  * @param string $role
  *   The role for which the permissions are being requested.
